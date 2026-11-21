@@ -18,7 +18,13 @@ import numpy as np
 import torch
 
 # The 13 Sentinel-2 bands in the order they are stored in the EuroSAT_MS .tif files.
-BANDS = ["B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B08A", "B09", "B10", "B11", "B12"]
+#
+# IMPORTANT: the narrow NIR band B8A is stored LAST, not between B08 and B09.
+# We found this from the data itself (see the spectral-signature figure): the channel at
+# position 9 is ~0 for every class (the cirrus band B10 has almost no signal), and the channel
+# at position 12 follows the near-infrared band B08 almost exactly (very bright for crops,
+# very dark for water), which is what B8A looks like. Position 10/11 also fit B11 > B12.
+BANDS = ["B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12", "B8A"]
 
 # Which bands to feed the network in each experiment ("band ablation").
 # Numbers are positions in BANDS above. NOTE: for RGB the order must be R,G,B
@@ -28,9 +34,13 @@ BAND_GROUPS = {
     "rgb_ms": [3, 2, 1],                               # same bands, but taken from the 13-band files
                                                        # (a like-for-like reference for the ablation)
     "rgb+nir": [3, 2, 1, 7],                           # + near-infrared (B08)
-    "rgb+nir+rededge": [3, 2, 1, 7, 4, 5, 6, 8],       # + red-edge bands (B05,B06,B07,B8A)
-    "rgb+nir+swir": [3, 2, 1, 7, 11, 12],              # + short-wave infrared (B11,B12)
+    "rgb+nir+rededge": [3, 2, 1, 7, 4, 5, 6, 12],      # + red-edge bands (B05,B06,B07,B8A)
+    "rgb+nir+swir": [3, 2, 1, 7, 10, 11],              # + short-wave infrared (B11,B12)
     "all13": list(range(13)),                          # everything
+    # --- groups of the FIRST Kaggle run, which used the wrong band order (positions 8, 11, 12
+    # were assumed to be B8A, B11, B12). What they really contained is kept under honest names:
+    "rgb+nir+b05b06b07b09": [3, 2, 1, 7, 4, 5, 6, 8],  # + B05,B06,B07 (red-edge) and B09 (water vapour)
+    "rgb+nir+b12+b8a": [3, 2, 1, 7, 11, 12],           # + B12 (SWIR-2) and B8A (narrow NIR)
 }
 
 

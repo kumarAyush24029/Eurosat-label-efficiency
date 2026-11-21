@@ -83,3 +83,29 @@ echo ALL DONE"""),
 !python src/eda.py --ms_root data/raw_ms/EuroSAT_MS --out figures
 !zip -qr results_ms.zip results figures && ls -la results_ms.zip"""),
 ])
+
+
+# ------------------------------------------------- MS notebook, corrected band groups (rerun)
+save("run_kaggle_ms_fix.ipynb", [
+    md("# Team 21 - EuroSAT: corrected band-ablation groups\n"
+       "The first 13-band run assumed the wrong band order (B8A is stored LAST in the files). "
+       "Here we rerun the two affected groups with the corrected indices: `rgb+nir+rededge` (B04,B03,B02,B08,B05,B06,B07,B8A) "
+       "and `rgb+nir+swir` (B04,B03,B02,B08,B11,B12). Settings: **GPU T4 x2**, **Internet On**."),
+    CLONE,
+    code("""# 2) download 13-band EuroSAT (~2 GB)
+!mkdir -p data && cd data && wget -q -O ms.zip 'https://zenodo.org/records/7711810/files/EuroSAT_MS.zip?download=1' && unzip -q -n ms.zip -d raw_ms
+!ls data/raw_ms"""),
+    code("""# 3) sanity run; also builds the data cache that the two processes below share
+!python src/train.py --ms_root data/raw_ms/EuroSAT_MS --splits data/splits.json --out results/smoke_ms.csv --models cnn --inputs all13 --fracs 0.01 --seeds 0 --epochs 2"""),
+    md("## Corrected groups: one training process per GPU"),
+    code("""%%bash
+ARGS="--ms_root data/raw_ms/EuroSAT_MS --splits data/splits.json --fracs 0.01 0.02 0.05 0.1 0.25 1.0 --seeds 0 1 2 --models resnet50 --inits imagenet --epochs 20"
+CUDA_VISIBLE_DEVICES=0 python src/train.py $ARGS --out results/runs_ms_c.csv --inputs rgb+nir+rededge 2>&1 | sed -u 's/^/[GPU0] /' &
+CUDA_VISIBLE_DEVICES=1 python src/train.py $ARGS --out results/runs_ms_d.csv --inputs rgb+nir+swir 2>&1 | sed -u 's/^/[GPU1] /' &
+wait
+echo ALL DONE"""),
+    code("""# 4) spectral-signature figure (with corrected band names) + bundle
+!python src/eda.py --ms_root data/raw_ms/EuroSAT_MS --out figures
+!python src/analyze.py --csv results/runs_ms_c.csv results/runs_ms_d.csv --out figures
+!zip -qr results_ms_fix.zip results figures && ls -la results_ms_fix.zip"""),
+])
