@@ -68,11 +68,18 @@ save("run_kaggle_ms.ipynb", [
 !ls data/raw_ms/* | head"""),
     code("""# 3) sanity run on the 13-band loader (the folder name below must match the `ls` output above)
 !python src/train.py --ms_root data/raw_ms/EuroSAT_MS --splits data/splits.json --out results/smoke_ms.csv --models cnn --inputs all13 --fracs 0.01 --seeds 0 --epochs 2"""),
-    md("## Band-ablation grid (ResNet-50, ImageNet init) x 6 label fractions x 3 seeds"),
-    code("""COMMON = "--ms_root data/raw_ms/EuroSAT_MS --splits data/splits.json --out results/runs_ms.csv --fracs 0.01 0.02 0.05 0.1 0.25 1.0 --seeds 0 1 2"
-!python src/train.py $COMMON --models resnet50 --inits imagenet --inputs rgb_ms all13 rgb+nir rgb+nir+rededge rgb+nir+swir --epochs 20"""),
+    md("## Band-ablation grid (ResNet-50, ImageNet init) x 6 label fractions x 3 seeds\n"
+       "Kaggle gives 2 GPUs per session but one training process uses only one, so we start TWO processes at once "
+       "(one per GPU), each with its own results file. Cell 3 above must have run first: it builds the data cache that both processes read."),
+    code("""%%bash
+ARGS="--ms_root data/raw_ms/EuroSAT_MS --splits data/splits.json --fracs 0.01 0.02 0.05 0.1 0.25 1.0 --seeds 0 1 2 --models resnet50 --inits imagenet --epochs 20"
+# GPU 0: three input settings; GPU 1: the other two. `sed -u` tags each log line with its GPU.
+CUDA_VISIBLE_DEVICES=0 python src/train.py $ARGS --out results/runs_ms_a.csv --inputs rgb_ms all13 rgb+nir 2>&1 | sed -u 's/^/[GPU0] /' &
+CUDA_VISIBLE_DEVICES=1 python src/train.py $ARGS --out results/runs_ms_b.csv --inputs rgb+nir+rededge rgb+nir+swir 2>&1 | sed -u 's/^/[GPU1] /' &
+wait
+echo ALL DONE"""),
     code("""# 4) bundle to download (Output tab -> results_ms.zip)
-!python src/analyze.py --csv results/runs_ms.csv --out figures
+!python src/analyze.py --csv results/runs_ms_a.csv results/runs_ms_b.csv --out figures
 !python src/eda.py --ms_root data/raw_ms/EuroSAT_MS --out figures
 !zip -qr results_ms.zip results figures && ls -la results_ms.zip"""),
 ])
