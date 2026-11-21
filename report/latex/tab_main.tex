@@ -1,0 +1,16 @@
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{|l|c|c|c|c|c|c|}
+\hline
+Model / input & 1\% & 2\% & 5\% & 10\% & 25\% & 100\% \\ \hline \hline
+Small CNN (scratch) & 76.3 $\pm$ 0.5 & 84.6 $\pm$ 0.4 & 90.5 $\pm$ 0.2 & 93.0 $\pm$ 0.3 & 96.5 $\pm$ 0.5 & 98.5 $\pm$ 0.1 \\
+ResNet-50 (scratch) & 73.5 $\pm$ 0.7 & 81.5 $\pm$ 1.2 & 87.6 $\pm$ 0.7 & 90.1 $\pm$ 0.1 & 92.8 $\pm$ 0.1 & 97.2 $\pm$ 0.2 \\
+ResNet-50 (ImageNet) & 88.3 $\pm$ 0.8 & 93.0 $\pm$ 0.7 & 96.0 $\pm$ 0.4 & 96.8 $\pm$ 0.2 & 98.0 $\pm$ 0.1 & 98.7 $\pm$ 0.1 \\
+ViT-S/16 (ImageNet-21k) & \textbf{90.6 $\pm$ 0.6} & \textbf{95.2 $\pm$ 0.8} & \textbf{97.1 $\pm$ 0.5} & \textbf{97.5 $\pm$ 0.4} & \textbf{98.3 $\pm$ 0.1} & \textbf{98.8 $\pm$ 0.1} \\
+\hline
+\end{tabular}
+\caption{Test accuracy (\%, mean $\pm$ std over 3 seeds) on EuroSAT RGB for different percentages of the 21,600 labelled training images (1\% = 216 images). Best value per column in bold.}
+\label{tab:main}
+\end{table}

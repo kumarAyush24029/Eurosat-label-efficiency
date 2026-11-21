@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{|l|ccc|ccc|}
+\hline
+ & \multicolumn{3}{c|}{1\% of labels} & \multicolumn{3}{c|}{100\% of labels} \\
+Model & acc. & conf. & ECE & acc. & conf. & ECE \\ \hline \hline
+CNN & 76.3 & 76.1 & 2.9 & 98.5 & 88.9 & 9.6 \\
+R50 scratch & 73.5 & 71.6 & 3.3 & 97.2 & 88.2 & 9.0 \\
+R50 ImageNet & 88.3 & 76.5 & 11.9 & 98.7 & 90.1 & 8.9 \\
+ViT-S & 90.6 & 80.4 & 10.3 & 98.8 & 90.5 & 8.7 \\
+\hline
+\end{tabular}
+\caption{Calibration on the test set: accuracy, mean confidence and Expected Calibration Error (all in \%, 15 bins), averaged over 3 seeds. Training used label smoothing 0.1; no post-hoc calibration was applied.}
+\label{tab:ece}
+\end{table}

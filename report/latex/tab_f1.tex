@@ -1,0 +1,22 @@
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+Class & CNN & R50 scratch & R50 ImageNet & ViT-S \\ \hline \hline
+AnnualCrop & 81.1 & 79.4 & 90.4 & \textbf{93.5} \\
+Forest & 87.6 & 85.5 & 91.9 & \textbf{93.3} \\
+HerbaceousVegetation & 66.9 & 64.0 & 84.6 & \textbf{87.4} \\
+Highway & 54.1 & 45.7 & 82.4 & \textbf{87.1} \\
+Industrial & 86.3 & 86.3 & \textbf{92.9} & 92.1 \\
+Pasture & 70.2 & 69.1 & 80.4 & \textbf{87.1} \\
+PermanentCrop & 62.1 & 63.7 & 82.7 & \textbf{85.6} \\
+Residential & 90.4 & 85.3 & \textbf{95.3} & 94.2 \\
+River & 68.3 & 63.1 & 81.5 & \textbf{87.5} \\
+SeaLake & 88.2 & 83.7 & \textbf{96.1} & 95.1 \\
+\hline Macro average & 75.5 & 72.6 & 87.8 & 90.3 \\ \hline
+\end{tabular}
+\caption{Per-class F1 score (\%) on the test set when only 1\% of the labels (about 22 images per class) are used, averaged over 3 seeds. Best value per class in bold.}
+\label{tab:f1}
+\end{table}

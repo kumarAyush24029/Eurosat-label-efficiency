@@ -1,2 +1,0 @@
-model,init,input,frac,seed,n_train,val_acc,test_acc,test_f1,epochs,steps,sec
-cnn,scratch,rgb,0.01,0,216,0.7678,0.7585,0.7512,356,356,18.3
