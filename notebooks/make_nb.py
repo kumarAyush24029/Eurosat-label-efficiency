@@ -48,6 +48,11 @@ save("run_kaggle_rgb.ipynb", [
 !python src/train.py $COMMON --models vit_s --inits imagenet --inputs rgb --epochs 20"""),
     code("""# 4) plots + bundle to download (Output tab -> results_rgb.zip)
 !python src/analyze.py --csv results/runs_rgb.csv --out figures
+# error analysis: confusion matrices, per-class F1, calibration (uses the saved predictions)
+!python src/error_analysis.py --model resnet50 --init imagenet --input rgb --fracs 0.01 0.1 1.0
+!python src/error_analysis.py --model resnet50 --init scratch --input rgb --fracs 0.01 0.1 1.0
+!python src/error_analysis.py --model vit_s --init imagenet --input rgb --fracs 0.01 0.1 1.0
+!python src/eda.py --rgb_root data/raw_rgb/EuroSAT_RGB --out figures
 !zip -qr results_rgb.zip results figures && ls -la results_rgb.zip"""),
 ])
 
@@ -68,5 +73,6 @@ save("run_kaggle_ms.ipynb", [
 !python src/train.py $COMMON --models resnet50 --inits imagenet --inputs rgb_ms all13 rgb+nir rgb+nir+rededge rgb+nir+swir --epochs 20"""),
     code("""# 4) bundle to download (Output tab -> results_ms.zip)
 !python src/analyze.py --csv results/runs_ms.csv --out figures
+!python src/eda.py --ms_root data/raw_ms/EuroSAT_MS --out figures
 !zip -qr results_ms.zip results figures && ls -la results_ms.zip"""),
 ])
