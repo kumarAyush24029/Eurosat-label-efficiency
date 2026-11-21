@@ -19,12 +19,13 @@ import pandas as pd
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--csv", default="results/runs.csv")
+    ap.add_argument("--csv", nargs="+", default=["results/runs.csv"],
+                    help="one or more results files (e.g. runs_rgb.csv runs_ms.csv); they are merged")
     ap.add_argument("--out", default="figures")
     a = ap.parse_args()
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
 
-    df = pd.read_csv(a.csv)
+    df = pd.concat([pd.read_csv(p) for p in a.csv], ignore_index=True)
     # One readable name per setting, e.g. "resnet50 / imagenet / rgb".
     df["cfg"] = df["model"] + " / " + df["init"] + " / " + df["input"]
 
@@ -54,7 +55,8 @@ def main():
     if rgb:
         curve(rgb, "label_efficiency_rgb.png", "Label efficiency on EuroSAT (RGB), mean ± std over seeds")
     # Figure 2: effect of extra spectral bands (same model, different inputs).
-    ms = [c for c in g.cfg.unique() if c.startswith("resnet50 / imagenet")]
+    # (the jpg-based "/ rgb" line is excluded: the ablation compares inputs from the same 13-band files)
+    ms = [c for c in g.cfg.unique() if c.startswith("resnet50 / imagenet") and not c.endswith("/ rgb")]
     if len(ms) > 1:
         curve(ms, "band_ablation.png", "Effect of input bands (ResNet-50, ImageNet init)")
 

@@ -25,6 +25,8 @@ BANDS = ["B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B08A", "B09", 
 # = B04, B03, B02, which is why it reads [3, 2, 1].
 BAND_GROUPS = {
     "rgb": [3, 2, 1],                                  # red, green, blue only
+    "rgb_ms": [3, 2, 1],                               # same bands, but taken from the 13-band files
+                                                       # (a like-for-like reference for the ablation)
     "rgb+nir": [3, 2, 1, 7],                           # + near-infrared (B08)
     "rgb+nir+rededge": [3, 2, 1, 7, 4, 5, 6, 8],       # + red-edge bands (B05,B06,B07,B8A)
     "rgb+nir+swir": [3, 2, 1, 7, 11, 12],              # + short-wave infrared (B11,B12)
