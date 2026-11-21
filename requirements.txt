@@ -1,0 +1,14 @@
+torch
+torchvision
+timm
+numpy
+pandas
+scikit-learn
+matplotlib
+seaborn
+tifffile
+imagecodecs
+tqdm
+pyyaml
+grad-cam
+jupyter
