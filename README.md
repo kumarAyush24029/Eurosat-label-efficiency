@@ -21,7 +21,7 @@ Team 21 · Deep Learning · Project P21 · Dataset: EuroSAT (Sentinel-2, 10 clas
 | ResNet-50 (ImageNet) | 88.3 | 96.0 | 96.8 | 98.0 | 98.7 |
 | ViT-S/16 (ImageNet-21k) | **90.6** | **97.1** | **97.5** | **98.3** | **98.8** |
 
-Pre-training is the strongest lever (worth ~3.6-5x more labels at 1%). Near-infrared adds ~2 points at 1% labels; feeding all 13 bands to a pre-trained network does not help.
+Pre-training is the strongest lever (worth ~3.6-5x more labels at 1%). Near-infrared adds ~2 points at 1% labels (2.4-2.9 with red-edge or SWIR bands too, a difference within seed noise) and almost nothing from 5% labels on; feeding all 13 bands to a pre-trained network does not help.
 Full tables, band ablation, error and calibration analysis: see the report.
 
 **Band-order pitfall:** in the EuroSAT multispectral GeoTIFFs the narrow NIR band B8A is stored *last* (order B01-B08, B09, B10, B11, B12, B8A), unlike the documentation. `src/data.py` has the verified order. The first band-ablation run used the documented order; its two extended groups are kept in `results/runs_ms_a/b.csv` under their true band lists, and the intended groups were re-run (`notebooks/run_kaggle_ms_fix.ipynb`).

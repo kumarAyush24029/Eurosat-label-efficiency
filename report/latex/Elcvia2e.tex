@@ -79,7 +79,8 @@ ResNet-50 88.3\% accuracy, against 76.3\% for the small CNN and 73.5\% for a
 ResNet-50 trained from scratch; the CNN needs about 3.6 to 5 times more labels to
 match them. With all labels the gap closes (98.5\%--98.8\%) and differences are within
 test-set noise. We also compare input bands using the 13-band version of
-the data. Extra infrared bands help mostly when labels are scarce, whereas feeding all
+the data. Infrared bands help mostly when labels are scarce (about +2 to +3 points at 1\% of
+the labels, almost nothing from 5\%), whereas feeding all
 13 bands to a pre-trained network does not help. We report per-class errors
 (highway/river and crop/vegetation confusions dominate), calibration, and a
 band-order pitfall in the data files that we found and corrected.
@@ -302,13 +303,21 @@ built-up and water surfaces (Figure~\ref{fig:spectral}), information that a netw
 extract from the visible bands alone.
 
 \textbf{More bands is not better.} Feeding all 13 bands to the pre-trained network is slightly worse than R,G,B for
-1--10\% of the labels ($-0.2$ to $-0.7$ points) and equal at 100\% ($+0.1$). A likely reason is that the pre-trained
+1--10\% of the labels ($-0.2$ to $-0.7$ points; at 1--2\% this is within one standard deviation, at 5--10\% it is not)
+and equal at 25--100\% ($0.0$ and $+0.1$). A likely reason is that the pre-trained
 first layer was learned for three channels, and ten extra channels dilute it; with few labels the network cannot
-relearn it. Selecting a few informative bands is better than using all of them.
+relearn it. Selecting a few informative bands is better than using all of them (at 1\%, 91.4--92.3\% against 89.2\%).
 
-\textbf{The first-run band sets.} The set B08+B12+B8A reached the highest accuracy of the ablation: $92.3\pm0.3$\% at 1\%
-($+2.9\pm0.9$ points over R,G,B) and $99.2\pm0.1$\% at 100\% ($+0.4\pm0.0$). B08+B05--B07+B09 gave
-$+1.5\pm0.8$ at 1\%. \tbd{two sentences on the corrected red-edge and SWIR groups once the re-run is finished.}
+\textbf{Beyond near-infrared.} The corrected groups give $+2.4\pm1.2$ points at 1\% of the labels for the red-edge set
+(B05--B07, B8A) and $+2.8\pm1.0$ for the SWIR set (B11, B12), against $+2.0\pm0.7$ for B08 alone; at 2\% both give $+1.3$
+against $+1.0$. The extra gain over B08 alone (at most 0.8 points) is smaller than the seed-to-seed standard deviation, so
+with three seeds we cannot rank the NIR-only, red-edge and SWIR inputs. From 5\% of the labels on, every group is
+within $\pm0.4$ points of R,G,B, which is the resolution of the test set.
+
+\textbf{The first-run band sets.} The set B08+B12+B8A has the highest mean at 1\% ($92.3\pm0.3$\%, $+2.9\pm0.9$ points over
+R,G,B) and at 100\% ($99.2\pm0.1$\%, $+0.4\pm0.0$), but it is statistically tied with the corrected SWIR set ($92.2\pm0.9$\% at 1\%), which
+shares the band B12, and with the corrected red-edge set at 100\%. B08+B05--B07+B09 gave the smallest gain of the extended
+sets ($+1.5\pm0.8$ at 1\%), possibly because B09 (water vapour) carries little information about the land surface.
 
 \subsection{JPEG RGB versus RGB from the multispectral files}
 \label{sec:rgbvs}
@@ -360,7 +369,9 @@ model: this is worth the same accuracy as 3.6 to 5 times more labels, much more 
 input-band choice we tried. A ViT-S/16 is a good default at 1--5\% of the labels; with a quarter of the labels or more a pre-trained
 ResNet-50 is within 0.3 points of it, and even a small CNN trained from scratch is within 0.3 points
 at 100\% of the labels. When labels are very scarce and infrared bands are available, feeding a small, well-chosen
-set of them (rather than all bands) gives an additional gain of up to about 3 points.
+set of them (rather than all bands) gives an additional gain of about 2 to 3 points at 1\% of the labels. Most of it
+comes from the single near-infrared band; adding red-edge or SWIR bands on top changes the result by less than the seed noise.
+From 5\% of the labels on, the gain is below 0.5 points.
 
 \textbf{Limitations.} (1) EuroSAT patches come from the same scenes, and we split patches at random,
 so patches from neighbouring locations can be in both the training and the test set; absolute accuracies are
@@ -379,7 +390,8 @@ learning, nor remote-sensing-specific pre-trained models [6], which are natural 
 On EuroSAT, the amount of labelled data needed depends mostly on whether the network is pre-trained: with 22 labelled
 images per class an ImageNet-pre-trained ViT-S reaches 90.6\% accuracy and ResNet-50 88.3\%, against 76.3\% for a
 small CNN, and a CNN needs 3.6 to 5 times more labels to catch up; with all labels every good model is at 98.5--98.8\%.
-Near-infrared and short-wave-infrared information adds up to about 3 points when only 1\% of the labels are available,
+Near-infrared information adds about 2 points when only 1\% of the labels are available (2.4--2.9 points with red-edge or
+short-wave-infrared bands as well, a difference within noise) and almost nothing from 5\% of the labels on,
 while using all 13 bands with a pre-trained network does not help. Most errors are between visually similar
 classes (Highway/River and the crop/vegetation group), and all models are under-confident because of label smoothing.
 We also found that the band order of the EuroSAT multispectral files differs from its documentation, which silently

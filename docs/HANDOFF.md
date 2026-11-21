@@ -25,7 +25,13 @@ In the EuroSAT-MS `.tif` files the narrow NIR band **B8A is stored last**: order
 - old `rgb+nir+rededge` really = R,G,B + B08 + B05-B07 + B09 -> stored as `rgb+nir+b05b06b07b09`
 `src/data.py` is fixed (`BANDS` order, `BAND_GROUPS`). The two groups as originally intended (`rgb+nir+rededge` = B05,B06,B07,B8A; `rgb+nir+swir` = B11,B12) were **re-run** in Kaggle `notebook15cd3e6dee` (Version 2; notebook `notebooks/run_kaggle_ms_fix.ipynb`). The user says it has FINISHED, but **its results are not yet downloaded or merged**.
 
-## Remaining steps (in order)
+## UPDATE (session 2, 22 Nov 2026): steps 1-5 below are DONE
+- Corrected band run downloaded and merged (`results/runs_ms_c.csv` = red-edge, `runs_ms_d.csv` = SWIR, 18 rows each; total 198 runs). Tables/figures rebuilt, report text rewritten for the new numbers, Overleaf copy recompiled: 10 pages, no TBD.
+- New band result: NIR alone +2.0 +-0.7 pt at 1% labels; red-edge (B05-B07,B8A) +2.4 +-1.2; SWIR (B11,B12) +2.8 +-1.0; first-run B08+B12+B8A +2.9 +-0.9. Differences between the extended sets are within seed noise; from 5% labels on all gains are <0.4 pt.
+- Bug found in session 2: `src/make_report_figures.py` only read runs_rgb/ms_a/ms_b, so the band-gain figure ignored the corrected runs. It now reads every `results/runs_*.csv`.
+- Still open: user confirms affiliation/authors/email, downloads the PDF from Overleaf, says whether slides are needed.
+
+## Remaining steps (in order) - historical, see UPDATE above
 1. **Get the results.** Kaggle -> notebook15cd3e6dee -> Version 2 -> Output tab -> `proj/results_ms_fix.zip` (~1-3 MB; do NOT click "Download All", it holds ~4 GB). Extract into `kaggle_out/ms_fix/` (git-ignored). Copy `results/runs_ms_c.csv` and `results/runs_ms_d.csv` into the project `results/`, and `figures/spectral_signatures.png` (now with the corrected band names) into `figures/`. If the run did not finish or failed, read its log (view-only `/log` page) and resubmit.
 2. `python src/make_report_tables.py` (fills the two TBD rows of the band table automatically) and `python src/make_report_figures.py` (band-gain figure now uses the corrected groups; also copies the spectral figure). Open `figures/` PNGs and check them.
 3. **Edit `report/latex/Elcvia2e.tex`:**

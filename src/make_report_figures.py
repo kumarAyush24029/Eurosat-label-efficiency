@@ -28,8 +28,8 @@ OUT = Path("report/latex")
 OUT.mkdir(parents=True, exist_ok=True)
 plt.rcParams.update({"font.size": 9, "axes.titlesize": 10, "figure.dpi": 150})
 
-df = pd.concat([pd.read_csv(p) for p in ["results/runs_rgb.csv", "results/runs_ms_a.csv", "results/runs_ms_b.csv"]],
-               ignore_index=True)
+# read EVERY results file (RGB runs, first band run a+b, corrected band rerun c+d), so new runs are never missed
+df = pd.concat([pd.read_csv(p) for p in sorted(glob.glob("results/runs_*.csv"))], ignore_index=True)
 df["cfg"] = df["model"] + "/" + df["init"] + "/" + df["input"]
 classes = json.loads(Path("data/splits.json").read_text())["classes"]
 SHORT = ["AnnualCrop", "Forest", "Herbaceous", "Highway", "Industrial", "Pasture", "PermCrop",
@@ -66,8 +66,8 @@ plt.tight_layout(); plt.savefig(OUT / "fig_label_eff.png", dpi=200); plt.close()
 base = df[df.cfg == "resnet50/imagenet/rgb_ms"].set_index(["frac", "seed"]).test_acc
 fig, ax = plt.subplots(figsize=(6.2, 3.8))
 styles = [("resnet50/imagenet/rgb+nir", "RGB + NIR", "#ff7f0e"),
-          ("resnet50/imagenet/rgb+nir+rededge", "RGB + NIR + red-edge", "#2ca02c"),
-          ("resnet50/imagenet/rgb+nir+swir", "RGB + NIR + SWIR", "#d62728"),
+          ("resnet50/imagenet/rgb+nir+rededge", "RGB + NIR + red-edge (B05-B07,B8A)", "#2ca02c"),
+          ("resnet50/imagenet/rgb+nir+swir", "RGB + NIR + SWIR (B11,B12)", "#d62728"),
           ("resnet50/imagenet/all13", "All 13 bands", "#1f77b4")]
 for cfg, lab, col in styles:
     d = ((df[df.cfg == cfg].set_index(["frac", "seed"]).test_acc - base) * 100).groupby("frac").agg(["mean", "std"])
